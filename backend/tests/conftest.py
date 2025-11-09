@@ -28,19 +28,6 @@ def client(app):
 
 
 @pytest.fixture
-def user(app):
-    """Тестовый пользователь"""
-    with app.app_context():
-        user = User(
-            name='testuser',
-            email='user@gmail.com',
-        )
-        db.session.add(user)
-        db.session.commit()
-        return user
-
-
-@pytest.fixture
 def user_data():
     """Тестовые данные для создания пользователя"""
     return {

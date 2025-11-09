@@ -10,7 +10,7 @@ api = Blueprint("api", __name__)
 @api.route("/users", methods=["GET"])
 def get_all_users():
     try:
-        users = User.query.all()
+        users = db.session.execute(db.select(User)).scalars().all()
         users_response = [UserResponse.model_validate(user).model_dump() for user in users]
         return jsonify(users_response)
     except Exception as e:
@@ -20,11 +20,13 @@ def get_all_users():
 @api.route("/users/<int:user_id>", methods=["GET"])
 def get_user_by_id(user_id: int):
     try:
-        user = User.query.get_or_404(user_id)
+        user = db.session.get(User, user_id)
+        if not user:
+            return jsonify({"error": "Пользователь не найден"}), 404
         user_response = UserResponse.model_validate(user)
         return jsonify(user_response.model_dump())
     except Exception as e:
-        return jsonify({"error": "Пользователь не найден"}), 404
+        return jsonify({"error": "Ошибка при получении пользователя"}), 500
 
 
 @api.route("/users", methods=["POST"])

@@ -1,5 +1,5 @@
 import json
-from .conftest import user_data, user
+from .conftest import user_data
 
 def test_get_all_users_empty(client):
     response = client.get("/api/users")
