@@ -10,6 +10,8 @@ blinker==1.9.0
     # via flask
 click==8.3.0
     # via flask
+coverage[toml]==7.11.2
+    # via pytest-cov
 flask==3.1.2
     # via
     #   -r requirements.in
@@ -21,6 +23,8 @@ flask-sqlalchemy==3.1.1
     # via -r requirements.in
 greenlet==3.2.4
     # via sqlalchemy
+iniconfig==2.3.0
+    # via pytest
 itsdangerous==2.2.0
     # via flask
 jinja2==3.1.6
@@ -30,10 +34,24 @@ markupsafe==3.0.3
     #   flask
     #   jinja2
     #   werkzeug
+packaging==25.0
+    # via pytest
+pluggy==1.6.0
+    # via
+    #   pytest
+    #   pytest-cov
 pydantic==2.12.4
     # via -r requirements.in
 pydantic-core==2.41.5
     # via pydantic
+pygments==2.19.2
+    # via pytest
+pytest==9.0.0
+    # via
+    #   -r requirements.in
+    #   pytest-cov
+pytest-cov==7.0.0
+    # via -r requirements.in
 sqlalchemy==2.0.44
     # via flask-sqlalchemy
 typing-extensions==4.15.0
