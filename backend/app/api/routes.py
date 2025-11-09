@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 from backend.app.models.user_models import User
-from backend.app.schemas.user_schemas import UserCreate
+from backend.app.schemas.user_schemas import UserCreate, UserResponse
 from backend.app.database.setup import db
 
 api = Blueprint("api", __name__)
@@ -11,7 +11,8 @@ api = Blueprint("api", __name__)
 def get_all_users():
     try:
         users = User.query.all()
-        return jsonify([user.dict() for user in users])
+        users_response = [UserResponse.model_validate(user).model_dump() for user in users]
+        return jsonify(users_response)
     except Exception as e:
         return jsonify({"error": "Пользователи не найдены"}), 500
 
@@ -20,7 +21,8 @@ def get_all_users():
 def get_user_by_id(user_id: int):
     try:
         user = User.query.get_or_404(user_id)
-        return jsonify(user.dict())
+        user_response = UserResponse.model_validate(user)
+        return jsonify(user_response.model_dump())
     except Exception as e:
         return jsonify({"error": "Пользователь не найден"}), 404
 
@@ -29,23 +31,36 @@ def get_user_by_id(user_id: int):
 def create_user():
     try:
         data = request.get_json()
-        validated_data = UserCreate(**data)
-    except ValidationError as e:
-        return jsonify({"error": e.errors()}), 400
-    except Exception as e:
-        return jsonify({"error": "Неверные данные"}), 400
 
-    try:
+        if not data or not isinstance(data, dict):
+            return jsonify({"error": "Неверный формат данных"}), 400
+
+        if not data.get("name") or not data.get("email"):
+            return jsonify({"error": "Неверные данные: имя и email обязательны"}), 400
+
+        try:
+            validated_data = UserCreate(**data)
+        except ValidationError as e:
+            print(f"Validation error: {e}")
+            return jsonify({"error": f"Ошибка валидации: {str(e)}"}), 400
+
+        if User.query.filter_by(email=validated_data.email).first():
+            return jsonify({"error": "Пользователь с таким email уже существует"}), 400
+
         user = User(
             name=validated_data.name,
             email=validated_data.email
         )
         db.session.add(user)
         db.session.commit()
-        return jsonify(user.dict()), 201
+
+        user_response = UserResponse.model_validate(user)
+        return jsonify(user_response.model_dump()), 201
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Не удалось создать пользователя"}), 500
+        print(f"Unexpected error in create_user: {str(e)}")
+        return jsonify({"error": "Внутренняя ошибка сервера"}), 500
 
 
 
