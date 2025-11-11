@@ -24,9 +24,9 @@ def get_user_by_id_route(user_id: int) -> Tuple[Response, int]:
     """Получить пользователя по ID"""
     try:
         user = get_user(user_id)
-        if user is None:
-            return jsonify({"error": "Пользователь не найден"}), 404
-        return jsonify(user), 200
+        return jsonify(user.model_dump()), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

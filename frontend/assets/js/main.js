@@ -1,3 +1,5 @@
+const API_BASE = '/api';
+
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
 
@@ -6,41 +8,51 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = document.getElementById('newUserName').value;
         const email = document.getElementById('newUserEmail').value;
 
-        const response = await fetch('/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email })
-        });
+        try {
+            const response = await fetch(`${API_BASE}/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email })
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (response.ok) {
-            document.getElementById('message').innerHTML = '<div class="alert alert-success">User added!</div>';
-            loadUsers();
-            document.getElementById('addUserForm').reset();
-        } else {
-            document.getElementById('message').innerHTML = `<div class="alert alert-danger">${result.error}</div>`;
+            if (response.ok) {
+                document.getElementById('message').innerHTML = '<div class="alert alert-success">User added!</div>';
+                loadUsers();
+                document.getElementById('addUserForm').reset();
+            } else {
+                document.getElementById('message').innerHTML = `<div class="alert alert-danger">${result.error}</div>`;
+            }
+        } catch (error) {
+            document.getElementById('message').innerHTML = '<div class="alert alert-danger">Network error</div>';
         }
     });
 });
 
 async function loadUsers() {
-    const response = await fetch('/users');
-    const users = await response.json();
+    try {
+        const response = await fetch(`${API_BASE}/users`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-    const tbody = document.getElementById('usersTableBody');
-    tbody.innerHTML = '';
+        const users = await response.json();
 
-    users.forEach(user => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${user.id}</td>
-            <td>${user.name}</td>
-            <td>${user.email}</td>
-        `;
-        row.addEventListener('click', () => showUserDetails(user));
-        tbody.appendChild(row);
-    });
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+
+        users.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+            `;
+            row.addEventListener('click', () => showUserDetails(user));
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="3">Failed to load users</td></tr>';
+    }
 }
 
 function showUserDetails(user) {

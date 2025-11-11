@@ -10,8 +10,6 @@ logger = logging.getLogger(__name__)
 def get_users() -> List[UserResponse]:
     """Получить список всех пользователей"""
     users = db.session.execute(db.select(User)).scalars().all()
-    if not users:
-        raise ValueError("Пользователи не найдены")
     return [UserResponse.model_validate(user) for user in users]
 
 
