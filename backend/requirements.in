@@ -1,7 +1,9 @@
 flask
 flask-sqlalchemy
 flask-cors
+flask-migrate
 pydantic
 pydantic[email]
 pytest
 pytest-cov
+gunicorn

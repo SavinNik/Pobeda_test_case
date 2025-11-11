@@ -1,5 +1,3 @@
-const API_BASE = 'http://localhost:5000/api';
-
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
 
@@ -8,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = document.getElementById('newUserName').value;
         const email = document.getElementById('newUserEmail').value;
 
-        const response = await fetch(`${API_BASE}/users`, {
+        const response = await fetch('/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email })
@@ -27,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadUsers() {
-    const response = await fetch(`${API_BASE}/users`);
+    const response = await fetch('/users');
     const users = await response.json();
 
     const tbody = document.getElementById('usersTableBody');
