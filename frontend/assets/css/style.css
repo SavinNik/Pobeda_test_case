@@ -20,16 +20,15 @@ h1 {
 /* Новые стили для строк таблицы */
 .table tbody tr {
     transition: background-color 0.2s;
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
 .table tbody tr:hover {
-    background-color: #e9ecef; /* сероватый фон при наведении */
+    background-color: #e9ecef !important;
 }
 
 .table tbody tr:active {
-    background-color: #dee2e6; /* чуть темнее при клике */
-}
+    background-color: #dee2e6 !important;
 
 .btn {
     transition: all 0.2s;
